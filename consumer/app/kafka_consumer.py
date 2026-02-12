@@ -1,6 +1,7 @@
 import json
 from confluent_kafka import Consumer
-                                
+from mysql_connection import insert_to_sql
+
 consumer_config = {
     "bootstrap.servers": "localhost:9092",
     "group.id": "order-tracker",
@@ -11,21 +12,26 @@ consumer = Consumer(consumer_config)
 consumer.subscribe(['users.registered'])
 
 
-def read_from_kafka():
+async def read_from_kafka():
     try:
+        print('trying')
         while True:
-            msg = consumer.poll(1.0) # Wait 1s for a message
-            if msg is None: continue
-            if msg.error():
-                print(f"Consumer error: {msg.error()}")
+            data = await consumer.poll() 
+            if data is None: continue
+            if data.error():
+                print(f"Consumer error: {data.error()}")
                 continue
 
-            data = json.loads(msg.value())
+            data = json.loads(data.value())
             print(f"Received: {len(data)}")
-            # yield data
+            yield insert_to_sql(data)
+    except Exception as e:
+        print('error')
+        print(e)
+
     finally:
+        print('d')
         consumer.close()
 
 
-read_from_kafka()
 

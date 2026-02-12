@@ -1,7 +1,6 @@
-import os, time, pymysql
-from datetime import datetime
-from pymongo import MongoClient
-from kafka_consumer import read_from_kafka
+import os, pymysql
+
+
 
 MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017")
 MYSQL_CFG = {
@@ -13,7 +12,7 @@ MYSQL_CFG = {
 }
 STATE_FILE = "state.txt"
 
-def create_tables():
+async def create_tables():
     conn = pymysql.connect(**MYSQL_CFG)
     with conn.cursor() as cur:
         cur.execute("""CREATE TABLE IF NOT EXISTS customers (
@@ -41,11 +40,12 @@ def create_tables():
                     comments VARCHAR(255)
                     customerNumber INT 
                     )""")
+        print("created tabels")
         return conn
     # FOREIGN KEY REFERENCES customers(customerNumber)
     
 
-def insert_to_sql(document: dict):
+async def insert_to_sql(document: dict):
     conn = create_tables()
     conn = pymysql.connect(**MYSQL_CFG)
 
@@ -93,9 +93,12 @@ def insert_to_sql(document: dict):
 
             cur.execute(sql, data)
 
+        print("inserted")
+
+
             
         conn.close()
-
+        return
 
  
 
