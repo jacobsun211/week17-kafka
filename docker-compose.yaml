@@ -46,8 +46,6 @@ services:
 
   producer:
     build: ./producer
-    # ports:
-    #   - "8000:8000"
     depends_on:
       kafka:
         condition: service_healthy
@@ -69,16 +67,16 @@ services:
       MONGO_URI: mongodb://mongodb:27017
       MONGO_DB: appdb
 
-  # api:
-  #   build: ./analytics-api
-  #   depends_on:
-  #     mongodb:
-  #       condition: service_started
-  #     mysql:
-  #       condition: service_started
-  #   environment:
-  #     MONGO_URI: mongodb://mongodb:27017
-  #     MYSQL_HOST: mysql
+  api:
+    build: ./analytics-api
+    ports:
+      - "8000:8000"
+        condition: service_started
+      mysql:
+        condition: service_started
+    environment:
+      MONGO_URI: mongodb://mongodb:27017
+
 
 volumes:
   mongo_data:
