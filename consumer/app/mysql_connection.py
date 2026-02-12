@@ -10,7 +10,6 @@ MYSQL_CFG = {
     "database": "analytics_db",
     "autocommit": True
 }
-STATE_FILE = "state.txt"
 
 async def create_tables():
     conn = pymysql.connect(**MYSQL_CFG)
