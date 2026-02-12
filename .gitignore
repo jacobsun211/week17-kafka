@@ -1,0 +1,5 @@
+.idea
+.venv
+producer\app\__pycache__
+__pycache__/
+consumer\app\__pycache__
