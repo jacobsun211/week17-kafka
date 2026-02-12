@@ -20,15 +20,15 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
-    # healthcheck:
-    #   test: nc -z localhost 9092 || exit -1
-    #   start_period: 15s
-    #   interval: 5s
-    #   timeout: 10s
-    #   retries: 10
+    healthcheck:
+      test: nc -z localhost 9092 || exit -1
+      start_period: 15s
+      interval: 5s
+      timeout: 10s
+      retries: 10
 
   mongodb:
-    image: mongo:6.0
+    image: mongo:7.0
     ports:
       - "27017:27017"
     volumes:
@@ -44,10 +44,10 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
 
-  api:
-    build: ./api
-    ports:
-      - "8000:8000"
+  producer:
+    build: ./producer
+    # ports:
+    #   - "8000:8000"
     depends_on:
       kafka:
         condition: service_healthy
@@ -69,16 +69,16 @@ services:
       MONGO_URI: mongodb://mongodb:27017
       MONGO_DB: appdb
 
-  etl:
-    build: ./etl
-    depends_on:
-      mongodb:
-        condition: service_started
-      mysql:
-        condition: service_started
-    environment:
-      MONGO_URI: mongodb://mongodb:27017
-      MYSQL_HOST: mysql
+  # api:
+  #   build: ./analytics-api
+  #   depends_on:
+  #     mongodb:
+  #       condition: service_started
+  #     mysql:
+  #       condition: service_started
+  #   environment:
+  #     MONGO_URI: mongodb://mongodb:27017
+  #     MYSQL_HOST: mysql
 
 volumes:
   mongo_data:
