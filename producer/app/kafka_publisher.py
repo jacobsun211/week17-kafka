@@ -1,5 +1,4 @@
 import os, json, asyncio
-from fastapi import FastAPI
 from confluent_kafka import Producer
 from mongo_connection import collection
 # from models import UserRegisterModel
@@ -16,7 +15,7 @@ producer = Producer({"bootstrap.servers": KAFKA_BOOTSTRAP_SERVERS,})
 
 
 async def send_to_kafka():
-
+    count = 0
     orders_customers = []
     for document in collection.find({},{'_id': 0}):
         orders_customers.append(document)
@@ -30,8 +29,11 @@ async def send_to_kafka():
             payload = json.dumps(document).encode("utf-8") # converting to str
             producer.produce(KAFKA_TOPIC, payload) # sending to kafka
             producer.flush()
-            # time.sleep(0.5)
+            count += 1
+            time.sleep(0.5)
     print('done!')
+    print(count)
+    return 
 
 
 asyncio.run(send_to_kafka())
