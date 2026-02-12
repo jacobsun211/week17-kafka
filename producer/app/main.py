@@ -4,3 +4,4 @@ import asyncio
 
 asyncio.run(send_to_kafka())
 
+
